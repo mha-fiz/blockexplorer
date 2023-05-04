@@ -24,13 +24,12 @@ Moralis.start({
 });
 
 // Search API
-app.post('/address', async (req, res) => {
+app.get('/address', async (req, res) => {
   try {
-    const address = req.body.address;
+    const { query } = req;
     const chain = BSC_TESTNET_CHAINID_HEX;
-
     const response = await Moralis.EvmApi.transaction.getWalletTransactionsVerbose({
-      address,
+      address: query.address,
       chain,
     });
 
@@ -94,13 +93,12 @@ app.get('/tx/:hash', async (req, res) => {
 
 app.get('/blocks', async (_, res) => {
   try {
-    // To Do: Fix Date now to server time
+    const nowUTCTime = Date.now();
+
     const latestBlock = await Moralis.EvmApi.block.getDateToBlock({
-      date: Date.now(),
+      date: nowUTCTime,
       chain: BSC_TESTNET_CHAINID_HEX,
     });
-
-    // console.log('Date.now()', Date.now());
 
     let blockNrOrParentHash = latestBlock.toJSON().block;
     let previousBlockInfo = [];
